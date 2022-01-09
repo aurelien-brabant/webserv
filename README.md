@@ -21,7 +21,7 @@ It doesn't even completely conform to the HTTP/1.1 specification, and there is r
 - HTTP keep-alive mechanism to avoid excessive TCP SYN requests (connections made by the browser are reused as much as possible)
 - Support for chunked HTTP requests
 - Configurable body max. size / upload max. size
-- I/O multiplexing: the server can handles concurrent requests (although it's mono-threaded)
+- I/O multiplexing: the server handles concurrent requests (although it's mono-threaded)
 - Match different configuration blocks depending on the `Host` header field
 
 # Configuration format
