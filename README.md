@@ -1,22 +1,43 @@
-![build](https://github.com/busshi/webserv/actions/workflows/compil.yml/badge.svg)
+A tiny but highly configurable HTTP/1.1 server implementation, made for learning purpose.
 
-[![aldubar's 42Project Score](https://badge42.herokuapp.com/api/project/aldubar/webserv)](https://github.com/JaeSeoKim/badge42)
+# Disclaimer
 
-# Webserv
+This web server has been developed for learning purpose, and is not, by ANY mean, intended for real world usage.
 
-A tiny HTTP server implementation built with C++, for learning purpose.
+It doesn't even completely conform to the HTTP/1.1 specification, and there is room for a lot of improvements.
 
-More details about the project can be found in the [wiki](https://github.com/busshi/webserv/wiki).
+# Features
 
-## Build
+- Respond to any idiomatic HTTP request that has at least the `Host` header field
+- Configurable routes
+- Configurable request timeout
+- Configurable custom error pages
+- Configurable upload mechanism: only handles `multipart/form-data` content type
+- Support for the `GET`, `POST` and `DELETE` HTTP methods.
+- HTTP redirections
+- File deletion mechanism (through the use of the `DELETE` HTTP verb) **in upload directories** only
+- Common Gateway Interface implementation: designed to support `php-cgi`, may actually support a lot of others
+- Careful error handling (catches ill-formed requests)
+- HTTP keep-alive mechanism to avoid excessive TCP SYN requests (connections made by the browser are reused as much as possible)
+- Support for chunked HTTP requests
+- Configurable body max. size / upload max. size
+- I/O multiplexing: the server can handles concurrent requests (although it's mono-threaded)
+- Match different configuration blocks depending on the `Host` header field
 
-### Prerequisites
+# Configuration format
 
-- A C++ compiler, preferably clang++ (g++ should work too though)
+For more information about our configuration format and our API, feel free to check the [wiki](https://github.com/busshi/webserv/wiki). While some parts are
+outdated or incomplete, it still is very relevant and worth reading.
+
+# Build
+
+## Prerequisites
+
+- A C++ compiler (tested with clang++ and g++)
 - A UNIX-based operating system: the web server has been mainly built to work on Linux but should also work on MacOS.
-- `make`
+- The `make` build tool
 
-### Compile the server
+## Compile the server
 
 A simple `make` command should make the `webserv` executable. This executable is the server itself and can then
 be started by providing it a configuration file like so:
@@ -24,18 +45,17 @@ be started by providing it a configuration file like so:
 ```sh
 ./webserv ./asset/config/simple.conf
 ```
-More information about the configuration file format and available configuration options can be found on the corresponding
-[wiki page](https://github.com/busshi/webserv/wiki/Configuration-File) .
 
-## Generate documentation (doxygen)
+## Enable server errors insights
 
-Our webserv's code is highly documented and HTML-based documentation can be generated using `doxygen`.
-For that, special Makefile rules are provided: you just need to have the doxygen executable available on your system.
+By default, when a HTTP error is leveraged by the server, simple HTML that indicates the error status and a short description of the status is sent to the user agent.
+For security sake, no specific information about why the error happened is delivered to the client.
 
-| Rule | Effect |
-|------|--------|
-| doc  |  generate documentation if it hasn't been generated already, and then open the index.html file in a new tab in the default browser.  |
-| cleandoc | Basically removes the documentation directory, allowing any subsequent doc command to regenerate it.
-| redoc | cleandoc + doc
+However, by passing to webserv the `ERROR_HINT` environment variable, the response will contain some insights about why the error actually happened.
+This may be useful for quick and easy troubleshooting (although error logs are generally a much better option).
 
-**IMPORTANT NOTE**: documentation WON'T be regenerated on source file change, you need to remake it to update it as needed. 
+Starting the server as showed below should do the trick.
+
+```sh
+ERROR_HINT=1 ./webserv my_config
+```
